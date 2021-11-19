@@ -40,6 +40,26 @@
     move: function () {
       this.x += this.speed_x * this.direction;
       this.y += this.speed_y;
+
+      // Colisión con paredes verticales de acuerdo al tamaño del board
+			if (this.x <= (this.board.width - this.board.width) + 10) {
+				this.speed_x = -this.speed_x;
+				this.bounceAngle = -this.bounceAngle;
+			}
+			if (this.x >=  this.board.width - 10) {
+				this.speed_x = -this.speed_x;
+				this.bounceAngle = -this.bounceAngle;
+			}
+
+      // Colisión con paredes horizontales de acuerdo al tamaño del board
+			if (this.y <= (this.board.height - this.board.height) + 10) {
+				this.speed_y = -this.speed_y;
+				this.bounceAngle = -this.bounceAngle;
+			}
+			if (this.y >= this.board.height - 10) {
+				this.speed_y = -this.speed_y;
+				this.bounceAngle = -this.bounceAngle;
+			}
     },
     get width() {
       return this.radius * 2;
