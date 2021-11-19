@@ -45,10 +45,14 @@
 			if (this.x <= (this.board.width - this.board.width) + 10) {
 				this.speed_x = -this.speed_x;
 				this.bounceAngle = -this.bounceAngle;
+        var puntos = parseInt(document.getElementById("puntosJugador1").textContent) + 1;
+        document.getElementById("puntosJugador1").textContent = puntos.toString();
 			}
 			if (this.x >=  this.board.width - 10) {
 				this.speed_x = -this.speed_x;
 				this.bounceAngle = -this.bounceAngle;
+        var puntos = parseInt(document.getElementById("puntosJugador2").textContent) + 1;
+        document.getElementById("puntosJugador2").textContent = puntos.toString();
 			}
 
       // Colisión con paredes horizontales de acuerdo al tamaño del board
@@ -146,7 +150,7 @@
         this.checkCollisions();
         this.board.ball.move();
       }
-    },
+    }
   };
 
   // Revisa si a colisiona con b
@@ -188,11 +192,11 @@
 })();
 
 var board = new Board(600, 400);
-var bar = new Bar(20, 50, 15, 50, board);
-var bar2 = new Bar(560, 50, 15, 50, board);
+var bar = new Bar(20, 160, 15, 50, board);
+var bar2 = new Bar(560, 160, 15, 50, board);
 var canvas = document.getElementById("canvas");
 var boardView = new BoardView(canvas, board);
-var ball = new Ball(350, 100, 10, board);
+var ball = new Ball(board.width / 2., board.height / 2, 10, board);
 
 document.addEventListener("keydown", function (ev) {
   if (ev.keyCode == 38) {
@@ -210,8 +214,6 @@ document.addEventListener("keydown", function (ev) {
   } else if (ev.keyCode == 32) {
     board.playing = !board.playing;
   }
-
-  console.log(bar.toString());
 });
 
 boardView.draw();
