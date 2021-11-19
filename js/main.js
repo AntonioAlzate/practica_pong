@@ -28,17 +28,40 @@
     this.speed_x = 3;
     this.board = board;
     this.direction = 1;
+    this.bounceAngle = 0;
+    this.maxBounceAngle = Math.PI / 12;
+    this.speed = 3;
 
     board.ball = this;
     this.kind = "circle";
-  }
+  };
 
   self.Ball.prototype = {
-    move: function(){
-      this.x += (this.speed_x * this.direction);
-      this.y += (this.speed_y);
-    }
-  }
+    move: function () {
+      this.x += this.speed_x * this.direction;
+      this.y += this.speed_y;
+    },
+    get width() {
+      return this.radius * 2;
+    },
+    get height() {
+      return this.radius * 2;
+    },
+    collision: function (bar) {
+      // Realiza la accion de rebote al colisionar
+      var relativeIntersectY = bar.y + bar.height / 2 - this.y;
+
+      var normalizadIntersectY = relativeIntersectY / (bar.height / 2);
+
+      this.bounceAngle = normalizadIntersectY * this.maxBounceAngle;
+
+      this.speed_y = this.speed * -Math.sin(this.bounceAngle);
+      this.speed_x = this.speed * Math.cos(this.bounceAngle);
+
+      if (this.x > this.board.width / 2) this.direction = -1;
+      else this.direction = 1;
+    },
+  };
 })();
 
 (function () {
@@ -88,15 +111,46 @@
         draw(this.ctx, el);
       }
     },
+    checkCollisions: function () {
+      for (let i = this.board.bars.length - 1; i >= 0; i--) {
+        var bar = this.board.bars[i];
+        if (hit(bar, this.board.ball)) {
+          this.board.ball.collision(bar);
+        }
+      }
+    },
     play: function () {
-      if(this.board.playing){
-        
+      if (this.board.playing) {
         this.clean();
         this.draw();
+        this.checkCollisions();
         this.board.ball.move();
       }
-    }
+    },
   };
+
+  // Revisa si a colisiona con b
+  function hit(a, b) {
+    var hit = false;
+
+    // colisiones horizontales
+    if (b.x + b.width >= a.x && b.x < a.x + a.width) {
+      //Colisiones verticales
+      if (b.y + b.height >= a.y && b.y < a.y + a.height) hit = true;
+    }
+
+    // Colisión de a con b
+    if (b.x <= a.x && b.x + b.width >= a.x + a.width) {
+      if (b.y <= a.y && b.y + b.height >= a.y + a.height) hit = true;
+    }
+
+    // Colision b con a
+    if (a.x <= b.x && a.x + a.width >= b.x + b.width) {
+      if (a.y <= b.y && a.y + a.height >= b.y + b.height) hit = true;
+    }
+
+    return hit;
+  }
 
   function draw(ctx, elemento) {
     switch (elemento.kind) {
