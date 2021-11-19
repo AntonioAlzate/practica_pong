@@ -10,7 +10,9 @@
 
   self.Board.prototype = {
     get elementos() {
-      var elementos = this.bars.map(function(bar) {return bar; });
+      var elementos = this.bars.map(function (bar) {
+        return bar;
+      });
       elementos.push(this.ball);
       return elementos;
     },
@@ -24,10 +26,19 @@
     this.radius = radius;
     this.speed_y = 0;
     this.speed_x = 3;
+    this.board = board;
+    this.direction = 1;
 
     board.ball = this;
     this.kind = "circle";
-  };
+  }
+
+  self.Ball.prototype = {
+    move: function(){
+      this.x += (this.speed_x * this.direction);
+      this.y += (this.speed_y);
+    }
+  }
 })();
 
 (function () {
@@ -78,9 +89,13 @@
       }
     },
     play: function () {
-      this.clean();
-      this.draw();
-    },
+      if(this.board.playing){
+        
+        this.clean();
+        this.draw();
+        this.board.ball.move();
+      }
+    }
   };
 
   function draw(ctx, elemento) {
@@ -103,24 +118,29 @@ var bar = new Bar(20, 50, 15, 50, board);
 var bar2 = new Bar(560, 50, 15, 50, board);
 var canvas = document.getElementById("canvas");
 var boardView = new BoardView(canvas, board);
-var ball = new Ball(350,100, 10, board);
+var ball = new Ball(350, 100, 10, board);
 
 document.addEventListener("keydown", function (ev) {
-  ev.preventDefault();
   if (ev.keyCode == 38) {
+    ev.preventDefault();
     bar.up();
   } else if (ev.keyCode == 40) {
+    ev.preventDefault();
     bar.down();
   } else if (ev.keyCode == 87) {
+    ev.preventDefault();
     bar2.up();
   } else if (ev.keyCode == 83) {
+    ev.preventDefault();
     bar2.down();
+  } else if (ev.keyCode == 32) {
+    board.playing = !board.playing;
   }
 
   console.log(bar.toString());
 });
 
-//self.addEventListener("load", main);
+boardView.draw();
 
 window.requestAnimationFrame(controller);
 
